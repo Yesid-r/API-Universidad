@@ -1,18 +1,32 @@
 package com.edu.uptc.backenduptc.model.entities;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
+@Table (name = "persons")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Person implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(nullable = false, length = 60)
     private String firstName;
+    @Column(nullable = false, length = 60)
     private String lastName;
 
+    @Column(nullable = false, length = 60, unique = true)
     private String dni;
+
+    @Column(name = "date_up")
     private LocalDateTime dateUp;
+    @Column(name = "date_update")
     private LocalDateTime dateUpdate;
+    @Embedded
     private Address address;
 
     public Person(Integer id, String firstName, String lastName, String dni, Address address) {
@@ -21,6 +35,10 @@ public abstract class Person implements Serializable {
         this.lastName = lastName;
         this.dni = dni;
         this.address = address;
+    }
+
+    public Person() {
+
     }
 
     public Integer getId() {
@@ -77,6 +95,15 @@ public abstract class Person implements Serializable {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+    @PrePersist
+    public void beginPersist(){
+        this.dateUp = LocalDateTime.now();
+
+    }
+    @PreUpdate
+    public void beginUpdatePersist(){
+        this.dateUpdate = LocalDateTime.now();
     }
 
     @Override

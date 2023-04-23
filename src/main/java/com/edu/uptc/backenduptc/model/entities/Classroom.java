@@ -1,18 +1,37 @@
 package com.edu.uptc.backenduptc.model.entities;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
+@Table(name="classrooms")
 public class Classroom implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "num_classroom", nullable = false)
     private Integer numClassRoom;
+    @Column(name = "measures_mt2")
     private String measures;
-
+    @Column(name="number_desks")
     private Integer numberDesks;
-
+    @Column(name="Board_type")
+    @Enumerated(EnumType.STRING)
     private Board board;
+    @Column(name = "date_update")
     private LocalDateTime dateUpdate;
+    @Column(name = "date_up")
+    private LocalDateTime dateUp;
+
+    @ManyToOne(optional = true,cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "pabellon_id",foreignKey = @ForeignKey(name = "FK_PABELLON_ID") )
+    private Pabellon pabellon;
 
     public Classroom() {
     }
@@ -85,6 +104,32 @@ public class Classroom implements Serializable {
                 ", dateUpdate=" + dateUpdate +
                 '}';
     }
+
+    public LocalDateTime getDateUp() {
+        return dateUp;
+    }
+
+    public void setDateUp(LocalDateTime dateUp) {
+        this.dateUp = dateUp;
+    }
+
+    public Pabellon getPabellon() {
+        return pabellon;
+    }
+
+    public void setPabellon(Pabellon pabellon) {
+        this.pabellon = pabellon;
+    }
+    @PrePersist
+    public void beginPersist(){
+        this.dateUp = LocalDateTime.now();
+
+    }
+    @PreUpdate
+    public void beginUpdatePersist(){
+        this.dateUpdate = LocalDateTime.now();
+    }
+
 
     @Override
     public boolean equals(Object o) {

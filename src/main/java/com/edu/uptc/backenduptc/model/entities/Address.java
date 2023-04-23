@@ -1,7 +1,12 @@
 package com.edu.uptc.backenduptc.model.entities;
 
+import jakarta.persistence.Embeddable;
+
+
 import java.io.Serializable;
 
+
+@Embeddable
 public class Address implements Serializable {
 
     private String street;

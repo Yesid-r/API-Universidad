@@ -1,16 +1,30 @@
 package com.edu.uptc.backenduptc.model.entities;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
+@Entity
+@Table(name = "pabellones")
 public class Pabellon implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "metros_cuadrados")
     private double mt2;
+    @Embedded
     private Address address;
+    @Column(name = "name_pabellon", unique = true, nullable = false)
     private String name;
+    @Column(name = "date_up")
     private LocalDateTime dateUp;
-    private LocalDateTime dateLatestUpdate;
+    @Column(name = "date_update")
+    private LocalDateTime dateUpdate;
+    @OneToMany(mappedBy = "pabellon", fetch = FetchType.LAZY)
+    private Set<Classroom> classrooms;
 
     public Pabellon() {
     }
@@ -62,12 +76,29 @@ public class Pabellon implements Serializable {
         this.dateUp = dateUp;
     }
 
-    public LocalDateTime getDateLatestUpdate() {
-        return dateLatestUpdate;
+    public LocalDateTime getDateUpdate() {
+        return dateUpdate;
     }
 
-    public void setDateLatestUpdate(LocalDateTime dateLatestUpdate) {
-        this.dateLatestUpdate = dateLatestUpdate;
+    public void setDateUpdate(LocalDateTime dateUpdate) {
+        this.dateUpdate = dateUpdate;
+    }
+
+    public Set<Classroom> getClassrooms() {
+        return classrooms;
+    }
+
+    public void setClassrooms(Set<Classroom> classrooms) {
+        this.classrooms = classrooms;
+    }
+    @PrePersist
+    public void beginPersist(){
+        this.dateUp = LocalDateTime.now();
+
+    }
+    @PreUpdate
+    public void beginUpdatePersist(){
+        this.dateUpdate = LocalDateTime.now();
     }
 
     @Override
@@ -78,7 +109,7 @@ public class Pabellon implements Serializable {
                 ", address=" + address +
                 ", name='" + name + '\'' +
                 ", dateUp=" + dateUp +
-                ", dateLatestUpdate=" + dateLatestUpdate +
+                ", dateLatestUpdate=" + dateUpdate +
                 '}';
     }
 
